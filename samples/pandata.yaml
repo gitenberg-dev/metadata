@@ -1,0 +1,43 @@
+_repo: Space-Viking_20728
+authors:
+   -
+    author_id_gutenberg: 8301
+    author_name: H. Beam Piper
+    author_sortname: Piper, H. Beam
+    author_wikipedia: http://en.wikipedia.org/wiki/H._Beam_Piper
+description: 
+editor_of_a_compilations:
+funding_info: 
+identifiers:
+    goodreads:
+    - '1440159'
+    gutenberg: 20728
+    isbns_related:
+    - '9780441602254'
+    openlibrary: 
+    - /books/OL7526155M
+    librarything:
+    - '138032'
+    oclc: 746971356
+illustrators:
+   -
+    illustrator_id_gutenberg: 25396
+    illustrator_name: John Schoenherr
+    illustrator_sortname: Schoenherr, John
+    illustrator_wikipedia: http://en.wikipedia.org/wiki/John_Schoenherr
+issued_gutenberg: '2007-03-03'
+language: en
+publication_date_original: '1964'
+publisher: Project Gutenberg
+publisher_original: Ace Books
+rights: PD-US
+rights_url:
+subjects:
+  - !LCSH Science fiction
+  - !LCSH Space warfare -- Fiction
+  - !LCSH Revenge -- Fiction
+  - !LCC PS
+title: Space Viking
+translators:
+type: Text
+
