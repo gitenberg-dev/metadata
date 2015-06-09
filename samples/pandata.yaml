@@ -33,10 +33,11 @@ publisher_original: Ace Books
 rights: PD-US
 rights_url:
 subjects:
-  - !LCSH Science fiction
-  - !LCSH Space warfare -- Fiction
-  - !LCSH Revenge -- Fiction
-  - !LCC PS
+  - !lcsh Science fiction
+  - !lcsh Space warfare -- Fiction
+  - !lcsh Revenge -- Fiction
+  - !lcc PS
+  - Space Opera
 title: Space Viking
 translators:
 type: Text
