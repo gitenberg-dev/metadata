@@ -7,7 +7,7 @@ from metadata.pandata import Pandata
 import pymarc
 
 TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'samples/pandata.yaml')
-TESTDATA_MARCFILENAME = os.path.join(os.path.dirname(__file__), 'samples/pandata.marc.xml')
+TESTDATA_MARCFILENAME = os.path.join(os.path.dirname(__file__), 'samples/testoutput.marc.xml')
 
 class Yaml2MarcTest(unittest.TestCase):
     pandata = Pandata(TESTDATA_FILENAME)
