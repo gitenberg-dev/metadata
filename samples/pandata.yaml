@@ -5,6 +5,13 @@ authors:
     author_name: H. Beam Piper
     author_sortname: Piper, H. Beam
     author_wikipedia: http://en.wikipedia.org/wiki/H._Beam_Piper
+covers:
+   -
+    filename: 20728-h/images/illus-front.jpg
+    covertype: archival
+   -
+    filename: 20728-h/images/illus-back.jpg
+    covertype: archival-back
 description: 
 editor_of_a_compilations:
 funding_info: 
