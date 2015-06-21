@@ -4,10 +4,10 @@ import metadata.marc as marc
 import pymarc
 
 def subject_constructor(loader, node):
-    return node.tag[1:] + ":"+ loader.construct_scalar(node)
+    return (node.tag[1:] , loader.construct_scalar(node))
 
-yaml.add_constructor(u'!LCSH', subject_constructor)
-yaml.add_constructor(u'!LCC', subject_constructor)
+yaml.add_constructor(u'!lcsh', subject_constructor)
+yaml.add_constructor(u'!lcc', subject_constructor)
 
 PANDATA_STRINGFIELDS = [
     '_repo',
@@ -45,7 +45,9 @@ class Pandata(object):
     
     def __getattr__(self, name):
         if name in PANDATA_STRINGFIELDS:
-            return self.metadata.get(name, '')
+            value = self.metadata.get(name, '')
+            if isinstance(value, str):
+                return value
         if name in PANDATA_LISTFIELDS:
             return self.metadata.get(name, [])
         if name in PANDATA_DICTFIELDS:

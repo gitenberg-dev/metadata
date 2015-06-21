@@ -1,8 +1,7 @@
 """
 This takes a MARCXML filename as an argument and converts it into
 MARC records for the unglued pandata (in .xml and .mrc formats).
-Consider it a catalogolem: http://commons.wikimedia.org/wiki/File:Arcimboldo_Librarian_Stokholm.jpg
-Use the MARCXML file for the non-unglued pandata from Library of Congress.
+
 """
 
 import pymarc
@@ -162,7 +161,29 @@ def stub(pandata):
             ]
         )
         record.add_ordered_field(field520)
-        
+    
+    # subjects
+    if pandata.subjects:
+        for subject in pandata.subjects:
+            if isinstance(subject, tuple):
+                (authority, heading)  = subject
+            elif isinstance(subject, str):
+                (authority, heading)  = ( '', subject)
+            else:
+                continue
+            if authority == 'lcsh':
+                subjectfield =  pymarc.Field(tag='650', indicators = ['0', '0'],)
+                subjectfield.add_subfield('a', heading)
+            elif  authority == 'lcc':
+                subjectfield =  pymarc.Field(tag='050', indicators = ['0', '0'],)
+                subjectfield.add_subfield('a', heading)
+            elif  authority == '': #uncontrolled term
+                subjectfield =  pymarc.Field(tag='653', indicators = ['0', '0'],)
+                subjectfield.add_subfield('a', heading)
+            else:
+                subjectfield =  None
+            if subjectfield:
+                record.add_ordered_field(subjectfield)
     add_license(record, pandata)
     
     return record

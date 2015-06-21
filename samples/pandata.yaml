@@ -5,6 +5,13 @@ authors:
     author_name: H. Beam Piper
     author_sortname: Piper, H. Beam
     author_wikipedia: http://en.wikipedia.org/wiki/H._Beam_Piper
+covers:
+   -
+    filename: 20728-h/images/illus-front.jpg
+    covertype: archival
+   -
+    filename: 20728-h/images/illus-back.jpg
+    covertype: archival-back
 description: 
 editor_of_a_compilations:
 funding_info: 
@@ -33,10 +40,11 @@ publisher_original: Ace Books
 rights: PD-US
 rights_url:
 subjects:
-  - !LCSH Science fiction
-  - !LCSH Space warfare -- Fiction
-  - !LCSH Revenge -- Fiction
-  - !LCC PS
+  - !lcsh Science fiction
+  - !lcsh Space warfare -- Fiction
+  - !lcsh Revenge -- Fiction
+  - !lcc PS
+  - Space Opera
 title: Space Viking
 translators:
 type: Text

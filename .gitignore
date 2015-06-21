@@ -52,3 +52,6 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# marc converter test output
+testoutput.marc.xml
