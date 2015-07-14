@@ -3,11 +3,16 @@ import unittest
 import yaml
 import json
 import metadata.marc as marc
-from metadata.pandata import Pandata
 import pymarc
+
+from metadata.pandata import Pandata
+from metadata.pg_rdf import pg_rdf_to_yaml
+
 
 TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'samples/pandata.yaml')
 TESTDATA_MARCFILENAME = os.path.join(os.path.dirname(__file__), 'samples/testoutput.marc.xml')
+TESTDATA_PGRDFFILENAME = os.path.join(os.path.dirname(__file__), 'samples/pg20728.rdf')
+TESTDATA_YAMLFILENAME = os.path.join(os.path.dirname(__file__), 'samples/testoutput.yaml')
 
 class Yaml2MarcTest(unittest.TestCase):
     def setUp(self):
@@ -26,4 +31,11 @@ class Yaml2MarcTest(unittest.TestCase):
             self.assertEqual(field.get_subfields('a')[0],  'Science fiction')
             break
         open(TESTDATA_MARCFILENAME,"w+").write(pymarc.record_to_xml(record))
+
+class Rdf2YamlTest(unittest.TestCase):
+        
+    def test_conversion(self):
+        yaml = pg_rdf_to_yaml(TESTDATA_PGRDFFILENAME)
+        open(TESTDATA_YAMLFILENAME, "w+").write(json.dumps(yaml,indent=2, separators=(',', ': '), sort_keys=True))
+        pandata = Pandata(TESTDATA_YAMLFILENAME)
 
