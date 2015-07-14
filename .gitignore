@@ -54,4 +54,4 @@ docs/_build/
 target/
 
 # marc converter test output
-testoutput.marc.xml
+testoutput.*
