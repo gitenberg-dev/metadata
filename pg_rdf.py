@@ -1,6 +1,7 @@
 import rdflib
 import json
 import string
+import yaml
 
 from rdflib_jsonld import serializer
 
@@ -237,6 +238,9 @@ context =   {
     }
 
 def pg_rdf_to_yaml(file_path):
+    return yaml.safe_dump(pg_rdf_to_json(file_path),default_flow_style=False)
+    
+def pg_rdf_to_json(file_path):
     g=rdflib.Graph()
     g.load(file_path)
 
