@@ -2,11 +2,11 @@ import os
 import unittest
 import yaml
 import json
-import metadata.marc as marc
+import gitenberg.metadata.marc as marc
 import pymarc
 
-from metadata.pandata import Pandata
-from metadata.pg_rdf import pg_rdf_to_yaml
+from gitenberg.metadata.pandata import Pandata
+from gitenberg.metadata.pg_rdf import pg_rdf_to_yaml
 
 
 TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'samples/pandata.yaml')

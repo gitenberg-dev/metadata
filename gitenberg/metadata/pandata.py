@@ -1,6 +1,6 @@
 import yaml
 import json
-import metadata.marc as marc
+from . import marc
 import pymarc
 
 def subject_constructor(loader, node):
