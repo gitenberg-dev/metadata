@@ -2,6 +2,7 @@ import rdflib
 import json
 import string
 import yaml
+from .licenses import CCLicense
 
 from rdflib_jsonld import serializer
 
@@ -36,12 +37,16 @@ def plural(key):
         return key+'s'
         
 def get_url(key, val, entities=None):
+    if isinstance(val,list):
+        return (key,[get_url(key, item, entities=None)[1] for item in val])
     try:
-        return (key, val['@id'])
+        return (key, unicode(val['@id']))
     except KeyError:
         return None
     
 def get_value(key, val, entities=None):
+    if isinstance(val,list):
+        return (key,[get_value(key, item, entities=None)[1] for item in val])
     try:
         return (key, val['@value'])
     except KeyError:
@@ -66,7 +71,7 @@ def pgimagepath(val):
     return val[val.find("files/")+6:]
     
 def get_imagefile(key, val, entities=None) : 
-    if isinstance(val,str):
+    if isinstance(val,unicode):
         return (key, {"image_path": pgimagepath(val)})
     elif isinstance(val,list):
         images=[]
@@ -85,7 +90,7 @@ def set_entity(key, val, entities=None) :
     uri = val.get('@id',None)
     if entities and entities.has_key(uri):
         if uri.startswith("http://www.gutenberg.org/2009/agents/"):
-            entities[uri]["agent_id_gutenberg"] = uri[37:]
+            entities[uri]["gutenberg_agent_id"] = uri[37:]
         return (key, entities[uri])
     else:
         return uri
@@ -99,24 +104,33 @@ def listable(key, val, entities=None) :
     else:
         return (key, val)
     
+def get_subject(node):
+    try:
+        authority = node["dcam:memberOf"]["@id"]
+        authority = authority[8:].lower() if authority.startswith("dcterms:") else authority
+
+    except KeyError:
+        authority = ''
+    try:
+        value = node["rdf:value"]
+    except KeyError:
+        value = node
+    if authority:
+        return "!%s:%s" % (authority, value)
+    else:
+        return value
+
 def get_subjects(key, val, entities=None) :
-    subjects = []
-    for subject in val:
-        try:
-            authority = subject["dcam:memberOf"]["@id"]
-            authority = authority[8:].lower() if authority.startswith("dcterms:") else authority
-            
-        except KeyError:
-            authority = ''
-        try:
-            value = subject["rdf:value"]
-        except KeyError:
-            value = subject
-        if authority:
-            subjects.append(("!%s:%s" % (authority, value)))
-        else:
-            subjects.append(( value))
-    return (key, subjects)
+    if isinstance( val, list ):
+        subjects = []
+        for subject in val:
+            subjects.append(( get_subject(subject)))
+        return (key, subjects)
+    elif  isinstance( val, dict ):
+        return (key, [get_subject(val)])
+    else:
+        print val
+        return (key, [val])
         
 def identifiers(node,entities=None):
     uri = node.get('@id',None)
@@ -125,7 +139,29 @@ def identifiers(node,entities=None):
     if pg_id:
         ids['gutenberg']=pg_id
     node['identifiers']=ids
-    
+
+def cover_mover(node):
+    rights = node.get('rights',None)
+    if rights:
+        node['rights_url'] = CCLicense.url(rights)
+    covers = node.get('covers',None)
+    if covers and rights:
+        for cover in covers:
+            cover['rights'] = rights
+            cover['rights_url'] = CCLicense.url(rights)
+            cover['cover_type'] = "archival"
+    for (cover_field,cover_type) in [("back_cover","archival_back"),("titlepage_image","titlepage_image")]:
+        cover = node.get(cover_field,None)
+        if cover:
+            cover['rights'] = rights
+            cover['rights_url'] = CCLicense.url(rights)
+            cover['cover_type'] = cover_type
+            covers = node.get('covers',{})
+            covers.append(cover)
+    if covers:
+        node['covers'] = covers
+        
+   
 def add_by_path(value,target,path):
     path = str(path)
     if '/' in path:
@@ -141,7 +177,9 @@ def add_by_path(value,target,path):
         else:
             target[path] = value
 
-        
+def get_id(key, val, entities=None) :
+    return (key,unicode(val))
+
 def mapdata(node, mapping, entities):
     if isinstance(node, dict):
         mapped={}
@@ -161,47 +199,47 @@ def mapdata(node, mapping, entities):
         
 pandata_map ={
 "@type":None,
-"@id": "url",
+"@id": ("url",get_id),
 "cc:license":None, 
-"dcterms:alternative":"", 
-"dcterms:creator": ("author", set_listable_entity)  ,
+"dcterms:alternative":"alternative_title", 
+"dcterms:creator": ("creator/author", set_listable_entity)  ,
 "dcterms:description":"description", 
 "dcterms:hasFormat": None,
-"dcterms:issued": ("issued_gutenberg",get_value),
+"dcterms:issued": ("gutenberg_issued",get_value),
 "dcterms:language":("language", get_value),
 "dcterms:license": None,
 "dcterms:publisher": "publisher",
 "dcterms:rights":"rights",
 "dcterms:subject":("subjects", get_subjects), 
-"dcterms:tableOfContents":"", 
+"dcterms:tableOfContents":"tableOfContents", 
 "dcterms:title":"title", 
-"dcterms:type": ("pg_type", get_value),
-"marcrel:adp": ("adapter", set_entity), 
-"marcrel:aft": ("author_of_afterword", set_entity), 
-"marcrel:ann": ("annotator", set_entity), 
-"marcrel:arr": ("arranger", set_entity), 
-"marcrel:art": ("artist", set_entity), 
-"marcrel:aui": ("author_of_introduction", set_entity), 
-"marcrel:clb": ("contributor", set_entity), 
-"marcrel:cmm": ("commentator", set_entity), 
-"marcrel:cmp": ("composer", set_entity), 
-"marcrel:cnd": ("conductor", set_entity), 
-"marcrel:com": ("compiler", set_entity), 
-"marcrel:ctb": ("contributor", set_entity), 
-"marcrel:dub": ("dubious_author", set_entity), 
-"marcrel:edt": ("editor", set_entity), 
-"marcrel:egr": ("engineer", set_entity), 
-"marcrel:ill": ("illustrator", set_entity)  ,
-"marcrel:lbt": ("librettist", set_entity), 
-"marcrel:oth": ("other_contributor", set_entity), 
-"marcrel:pbl": ("publisher_contributor", set_entity), 
-"marcrel:pht": ("photographer", set_entity), 
-"marcrel:prf": ("performer", set_entity), 
-"marcrel:prt": ("printer", set_entity), 
-"marcrel:res": ("researcher", set_entity),
-"marcrel:trc": ("transcriber", set_entity), 
-"marcrel:trl": ("translator", set_entity), 
-"marcrel:unk": ("unknown_contributor", set_entity), 
+"dcterms:type": ("gutenberg_type", get_value),
+"marcrel:adp": ("contributor/adapter", set_listable_entity), 
+"marcrel:aft": ("contributor/author_of_afterword", set_listable_entity), 
+"marcrel:ann": ("contributor/annotator", set_listable_entity), 
+"marcrel:arr": ("contributor/arranger", set_listable_entity), 
+"marcrel:art": ("contributor/artist", set_listable_entity), 
+"marcrel:aui": ("contributor/author_of_introduction", set_listable_entity), 
+"marcrel:clb": ("contributor/collaborator", set_listable_entity), 
+"marcrel:cmm": ("contributor/commentator", set_listable_entity), 
+"marcrel:cmp": ("contributor/composer", set_listable_entity), 
+"marcrel:cnd": ("contributor/conductor", set_listable_entity), 
+"marcrel:com": ("contributor/compiler", set_listable_entity), 
+"marcrel:ctb": ("contributor/contributor", set_listable_entity), 
+"marcrel:dub": ("contributor/dubious_author", set_listable_entity), 
+"marcrel:edt": ("contributor/creator/editor", set_listable_entity), 
+"marcrel:egr": ("contributor/engineer", set_listable_entity), 
+"marcrel:ill": ("contributor/illustrator", set_listable_entity)  ,
+"marcrel:lbt": ("contributor/librettist", set_listable_entity), 
+"marcrel:oth": ("contributor/other_contributor", set_listable_entity), 
+"marcrel:pbl": ("contributor/publisher_contributor", set_listable_entity), 
+"marcrel:pht": ("contributor/photographer", set_listable_entity), 
+"marcrel:prf": ("contributor/performer", set_listable_entity), 
+"marcrel:prt": ("contributor/printer", set_listable_entity), 
+"marcrel:res": ("contributor/researcher", set_listable_entity),
+"marcrel:trc": ("contributor/transcriber", set_listable_entity), 
+"marcrel:trl": ("contributor/translator", set_listable_entity), 
+"marcrel:unk": ("contributor/unknown_contributor", set_listable_entity), 
 "pgterms:alias": ("alias", listable),
 "pgterms:birthdate":"birthdate", 
 "pgterms:bookshelf":("gutenberg_bookshelf", get_value), 
@@ -217,7 +255,7 @@ pandata_map ={
 "pgterms:marc520":"summary", 
 "pgterms:marc546":"language_note", 
 "pgterms:marc653": None, 
-"pgterms:marc901": ("cover", get_imagefile), 
+"pgterms:marc901": ("covers", get_imagefile), 
 "pgterms:marc902": ("titlepage_image", get_imagefile), 
 "pgterms:marc903":("back_cover", get_imagefile),
 "pgterms:name":"agent_name", 
@@ -225,7 +263,8 @@ pandata_map ={
 "rdfs:comment":None, 
 }
 pandata_adders = [identifiers]
-    
+postprocessors = [cover_mover]
+   
 context =   {
     "cc": "http://web.resource.org/cc/",
     "dcam": "http://purl.org/dc/dcam/",
@@ -237,8 +276,11 @@ context =   {
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     }
 
-def pg_rdf_to_yaml(file_path):
-    return yaml.safe_dump(pg_rdf_to_json(file_path),default_flow_style=False)
+def pg_rdf_to_yaml(file_path, repo_name=None):
+    pg_json = pg_rdf_to_json(file_path)
+    if repo_name:
+        pg_json['_repo'] = repo_name
+    return yaml.safe_dump(pg_json,default_flow_style=False)
     
 def pg_rdf_to_json(file_path):
     g=rdflib.Graph()
@@ -291,6 +333,8 @@ def pg_rdf_to_json(file_path):
     for adder in pandata_adders:
         adder(top,entities)
     top2 = mapdata(top, pandata_map, entities)     
+    for postprocessor in postprocessors:
+        postprocessor(top2)
     return top2
     
 #print(json.dumps(pg_rdf_to_yaml('/Users/eric/Downloads/cache/epub/19218/pg19218.rdf'),indent=2, separators=(',', ': '), sort_keys=True))
