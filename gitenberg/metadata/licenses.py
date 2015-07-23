@@ -37,9 +37,15 @@ LICENSE_LIST =  [item[0] for item in INFO_CC]
 LICENSE_LIST_ALL =  [item[0] for item in INFO_ALL]
 FACET_LIST = [item[1] for item in INFO_ALL] 
 
+RIGHTS_ALIAS = {
+    "Public domain in the USA.":"PD-US",
+    }
+
+
 class CCLicense():
     @staticmethod
     def url(license):
+        license = RIGHTS_ALIAS.get(license, license)
         if license in LICENSE_LIST_ALL:
             return INFO_ALL[LICENSE_LIST_ALL.index(license)][3]
         else:
