@@ -2,17 +2,17 @@ import os
 import unittest
 import yaml
 import json
-import metadata.marc as marc
+import gitenberg.metadata.marc as marc
 import pymarc
 
-from metadata.pandata import Pandata
-from metadata.pg_rdf import pg_rdf_to_yaml
+from gitenberg.metadata.pandata import Pandata
+from gitenberg.metadata.pg_rdf import pg_rdf_to_yaml
 
 
-TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'samples/pandata.yaml')
-TESTDATA_MARCFILENAME = os.path.join(os.path.dirname(__file__), 'samples/testoutput.marc.xml')
-TESTDATA_PGRDFFILENAME = os.path.join(os.path.dirname(__file__), 'samples/pg20728.rdf')
-TESTDATA_YAMLFILENAME = os.path.join(os.path.dirname(__file__), 'samples/testoutput.yaml')
+TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), '../samples/pandata.yaml')
+TESTDATA_MARCFILENAME = os.path.join(os.path.dirname(__file__), '../samples/testoutput.marc.xml')
+TESTDATA_PGRDFFILENAME = os.path.join(os.path.dirname(__file__), '../samples/pg20728.rdf')
+TESTDATA_YAMLFILENAME = os.path.join(os.path.dirname(__file__), '../samples/testoutput.yaml')
 
 class Yaml2MarcTest(unittest.TestCase):
     def setUp(self):
@@ -39,3 +39,6 @@ class Rdf2YamlTest(unittest.TestCase):
         open(TESTDATA_YAMLFILENAME, "w+").write(json.dumps(yaml,indent=2, separators=(',', ': '), sort_keys=True))
         pandata = Pandata(TESTDATA_YAMLFILENAME)
 
+
+if __name__ == '__main__':
+    unittest.main()

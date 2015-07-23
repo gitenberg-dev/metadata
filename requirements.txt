@@ -1,0 +1,15 @@
+pymarc
+PyYAML
+six
+
+#added for rdf conversion
+SPARQLWrapper
+html5lib
+isodate
+pyparsing
+rdflib
+rdflib-jsonld
+
+#for testing
+nose
+
