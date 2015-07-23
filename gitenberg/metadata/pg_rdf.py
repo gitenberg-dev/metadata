@@ -146,6 +146,8 @@ def cover_mover(node):
         node['rights_url'] = CCLicense.url(rights)
     covers = node.get('covers',None)
     if covers and rights:
+        if isinstance(covers,dict):
+            covers=[covers]
         for cover in covers:
             cover['rights'] = rights
             cover['rights_url'] = CCLicense.url(rights)
@@ -156,7 +158,10 @@ def cover_mover(node):
             cover['rights'] = rights
             cover['rights_url'] = CCLicense.url(rights)
             cover['cover_type'] = cover_type
-            covers = node.get('covers',{})
+            covers = node.get('covers',[])
+            if isinstance(covers,dict):
+                covers=[covers]
+
             covers.append(cover)
     if covers:
         node['covers'] = covers
