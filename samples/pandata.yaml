@@ -1,19 +1,24 @@
 _repo: Space-Viking_20728
-authors:
-   -
-    author_id_gutenberg: 8301
-    author_name: H. Beam Piper
-    author_sortname: Piper, H. Beam
-    author_wikipedia: http://en.wikipedia.org/wiki/H._Beam_Piper
+contributor:
+    illustrator:
+        gutenberg_agent_id: 25396
+        agent_name: John Schoenherr
+        agent_sortname: Schoenherr, John
+        wikipedia: http://en.wikipedia.org/wiki/John_Schoenherr
 covers:
    -
-    filename: 20728-h/images/illus-front.jpg
-    covertype: archival
+    image_path: 20728-h/images/illus-front.jpg
+    cover_type: archival
    -
-    filename: 20728-h/images/illus-back.jpg
+    image_path: 20728-h/images/illus-back.jpg
     covertype: archival-back
+creator:
+    author:
+        gutenberg_agent_id: 8301
+        agent_name: H. Beam Piper
+        agent_sortname: Piper, H. Beam
+        wikipedia: http://en.wikipedia.org/wiki/H._Beam_Piper
 description: 
-editor_of_a_compilations:
 funding_info: 
 identifiers:
     goodreads:
@@ -26,13 +31,8 @@ identifiers:
     librarything:
     - '138032'
     oclc: 746971356
-illustrators:
-   -
-    illustrator_id_gutenberg: 25396
-    illustrator_name: John Schoenherr
-    illustrator_sortname: Schoenherr, John
-    illustrator_wikipedia: http://en.wikipedia.org/wiki/John_Schoenherr
-issued_gutenberg: '2007-03-03'
+gutenberg_issued: '2007-03-03'
+gutenberg_type: Text
 language: en
 publication_date_original: '1964'
 publisher: Project Gutenberg
@@ -46,6 +46,4 @@ subjects:
   - !lcc PS
   - Space Opera
 title: Space Viking
-translators:
-type: Text
 
