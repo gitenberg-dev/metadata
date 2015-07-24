@@ -3,6 +3,7 @@ import json
 import string
 import yaml
 from .licenses import CCLicense
+from .marc import plural, marc_rels
 
 from rdflib_jsonld import serializer
 
@@ -29,12 +30,6 @@ def unblank_node(node, bnodes):
         return node
 
 
-
-def plural(key):
-    if key.endswith('s'):
-        return key+'es'
-    else:
-        return key+'s'
         
 def get_url(key, val, entities=None):
     if isinstance(val,list):
@@ -219,32 +214,6 @@ pandata_map ={
 "dcterms:tableOfContents":"tableOfContents", 
 "dcterms:title":"title", 
 "dcterms:type": ("gutenberg_type", get_value),
-"marcrel:adp": ("contributor/adapter", set_listable_entity), 
-"marcrel:aft": ("contributor/author_of_afterword", set_listable_entity), 
-"marcrel:ann": ("contributor/annotator", set_listable_entity), 
-"marcrel:arr": ("contributor/arranger", set_listable_entity), 
-"marcrel:art": ("contributor/artist", set_listable_entity), 
-"marcrel:aui": ("contributor/author_of_introduction", set_listable_entity), 
-"marcrel:clb": ("contributor/collaborator", set_listable_entity), 
-"marcrel:cmm": ("contributor/commentator", set_listable_entity), 
-"marcrel:cmp": ("contributor/composer", set_listable_entity), 
-"marcrel:cnd": ("contributor/conductor", set_listable_entity), 
-"marcrel:com": ("contributor/compiler", set_listable_entity), 
-"marcrel:ctb": ("contributor/contributor", set_listable_entity), 
-"marcrel:dub": ("contributor/dubious_author", set_listable_entity), 
-"marcrel:edt": ("contributor/creator/editor", set_listable_entity), 
-"marcrel:egr": ("contributor/engineer", set_listable_entity), 
-"marcrel:ill": ("contributor/illustrator", set_listable_entity)  ,
-"marcrel:lbt": ("contributor/librettist", set_listable_entity), 
-"marcrel:oth": ("contributor/other_contributor", set_listable_entity), 
-"marcrel:pbl": ("contributor/publisher_contributor", set_listable_entity), 
-"marcrel:pht": ("contributor/photographer", set_listable_entity), 
-"marcrel:prf": ("contributor/performer", set_listable_entity), 
-"marcrel:prt": ("contributor/printer", set_listable_entity), 
-"marcrel:res": ("contributor/researcher", set_listable_entity),
-"marcrel:trc": ("contributor/transcriber", set_listable_entity), 
-"marcrel:trl": ("contributor/translator", set_listable_entity), 
-"marcrel:unk": ("contributor/unknown_contributor", set_listable_entity), 
 "pgterms:alias": ("alias", listable),
 "pgterms:birthdate":"birthdate", 
 "pgterms:bookshelf":("gutenberg_bookshelf", get_value), 
@@ -267,6 +236,9 @@ pandata_map ={
 "pgterms:webpage": ("wikipedia",get_url),
 "rdfs:comment":None, 
 }
+for key in marc_rels.keys():
+    pandata_map[ "marcrel:"+key ] = ("contributor/" + marc_rels[key], set_listable_entity)
+    
 pandata_adders = [identifiers]
 postprocessors = [cover_mover]
    
