@@ -19,18 +19,25 @@ class Yaml2MarcTest(unittest.TestCase):
         self.pandata = Pandata(TESTDATA_FILENAME)
         
     def test_pandata(self):
-        self.assertTrue( self.pandata.issued_gutenberg == "2007-03-03")
-        self.assertTrue( isinstance( self.pandata.authors , list))
+        print self.pandata
+        self.assertEqual( self.pandata.gutenberg_issued , "2007-03-03")
+        self.assertTrue( isinstance( self.pandata.creator , dict))
         self.assertTrue( isinstance( self.pandata.subjects[0] , tuple ))
         self.assertEqual( self.pandata.subjects[0][0] , u'lcsh' )
 
     def test_marc(self):
         record = marc.stub(self.pandata)
+        open(TESTDATA_MARCFILENAME,"w+").write(pymarc.record_to_xml(record))
         for field in record.get_fields('650'):
             
             self.assertEqual(field.get_subfields('a')[0],  'Science fiction')
             break
-        open(TESTDATA_MARCFILENAME,"w+").write(pymarc.record_to_xml(record))
+        for field in record.get_fields('100'):
+            self.assertEqual(field.get_subfields('a')[0],  'Piper, H. Beam')
+            break
+        for field in record.get_fields('700'):
+            self.assertEqual(field.get_subfields('4')[0],  'ill')
+            break
 
 class Rdf2YamlTest(unittest.TestCase):
         
