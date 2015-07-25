@@ -15,17 +15,25 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read().replace('.. :changelog:', '')
 
 requirements = [
-    # TODO: put package requirements here
+    "pymarc==3.0.3",
+    "PyYAML==3.11",
+    "six==1.9.0",
+    "SPARQLWrapper==1.6.4",
+    "html5lib==0.999999",
+    "isodate==0.5.1",
+    "pyparsing==2.0.3",
+    "rdflib==4.2.0",
+    "rdflib-jsonld==0.3",
 ]
 
 test_requirements = [
-    # TODO: put package test requirements here
+    "nose==1.3.7"
 ]
 
 
 setup(
     name='gitenberg.metadata',
-    version='0.1.3',
+    version='0.1.4',
     description="metadata development - formats and machinery for GITenberg",
     long_description=readme + '\n\n' + history,
     author="Raymond Yee",
