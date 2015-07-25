@@ -30,7 +30,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author="Raymond Yee",
     author_email='raymond.yee@gmail.com',
-    url='https://github.com/rdhyee/gitenberg.metadata',
+    url='https://github.com/gitenberg-dev/metadata',
 
     namespace_packages=['gitenberg'],
     packages=find_packages(exclude=[]),
