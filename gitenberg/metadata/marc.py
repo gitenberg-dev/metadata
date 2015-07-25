@@ -13,18 +13,48 @@ import licenses
 
 marc_rels = {
     'aut': 'author',
-    'edc': 'editor_of_a_compilation', 
-    'ill': 'illustrator',
-    'trl': 'translator',
-    }
-marc_rels_plural = {
-    'aut': 'authors',
-    'edc': 'editors_of_a_compilation', 
-    'ill': 'illustrators',
-    'trl': 'translators',
+    "adp": "adapter",
+    "aft": "author_of_afterword",
+    "ann": "annotator",
+    "arr": "arranger",
+    "art": "artist",
+    "aui": "author_of_introduction",
+    "clb": "collaborator",
+    "cmm": "commentator",
+    "cmp": "composer",
+    "cnd": "conductor",
+    "com": "compiler",
+    "ctb": "contributor",
+    "dub": "dubious_author",
+    "edt": "creator/editor",
+    "egr": "engineer",
+    "ill": "illustrator",
+    "lbt": "librettist",
+    "oth": "other_contributor",
+    "pbl": "publisher_contributor",
+    "pht": "photographer",
+    "prf": "performer",
+    "prt": "printer",
+    "res": "researcher", 
+    "trc": "transcriber",
+    "trl": "translator",
+    "unk": "unknown_contributor",
     }
 
-main_entries = ['aut', 'edc', 'trl', 'ill']
+inverse_marc_rels = {v:k for k,v in  marc_rels.items()}
+
+def plural(key):
+    if key.endswith('s'):
+        return key+'es'
+    else:
+        return key+'s'
+
+def reverse_name(name):
+    tokens = name.split(' ')
+    if len(tokens)>1:
+        print tokens[-1] + ', ' + ' '.join(tokens[0:-1])
+
+main_entries = ['aut', 'edt', 'trl', 'ill']
 
 # argument is a dict with all the metadata from the pandata.yaml file
 def stub(pandata):
@@ -40,7 +70,7 @@ def stub(pandata):
     
     # fun fun fun 008
     new_field_value= now.strftime('%y%m%d')+'s'
-    publication_date = pandata.issued_gutenberg  # library cataloging will consider "Project Gutenberg" to be the publisher of the edition
+    publication_date = pandata.gutenberg_issued  # library cataloging will consider "Project Gutenberg" to be the publisher of the edition
     if publication_date and len(publication_date)>3: # must be at least a year
         new_field_value += publication_date[0:4]
     else:
@@ -82,26 +112,34 @@ def stub(pandata):
         
     # contributors 
     # use marc codes from http://www.loc.gov/marc/relators/relaterm.html
-    contributors = []
-    # hueristically decide the "main entry", the first contributor
+    creators = []
+    # heuristically decide the "main entry", the first creator
     for marc_type in main_entries:
-        for contributor in pandata.agents(marc_rels_plural[marc_type]):
-            contributors.append( (marc_type, contributor) )
+        creator= pandata.creator.get(marc_rels.get(marc_type), None)
+        if creator: 
+            creators.append( (marc_type, creator) )
+        else:
+            creator = pandata.creator.get(marc_rels.get(plural(marc_type)), [])
+            for each_creator in creator:
+                creators.append( (marc_type, each_creator) )
 
-    if contributors:
+    if creators:
+        (marc_code,creator) = creators[0]
+        sortname=creator.get( 'agent_sortname','')
+        if not sortname:
+            sortname = reverse_name(creator.get( 'agent_name',''))
         record.add_ordered_field( 
             pymarc.Field(
                 tag='100',
                 indicators = ['1', ' '],
                 subfields = [
-                    'a', contributors[0][1].get( marc_rels[contributors[0][0]]+'_sortname',''),
-                    '4', contributors[0][0],
+                    'a', sortname,
+                    '4', marc_code,
                 ]
             )
         )
     
     #language
-    print pandata.language
     if pandata.language:
         is_translation = '1' if pandata.translators else '0'
         record.add_ordered_field( 
@@ -111,20 +149,33 @@ def stub(pandata):
                 subfields = ['a', pandata.language ]
             )
         )
+    contributors = creators[1:] if creators else []
+    for contributor_type in pandata.contributor.keys():
+        contributor = pandata.contributor[contributor_type]  #handle plurals
+        marc_code =inverse_marc_rels.get(contributor_type,'unk')
+        if contributor_type in marc_rels.values():
+            #single value
+            contributors.append((marc_code,contributor))
+        else:
+            #list
+            for each_contributor in contributor:
+                contributors.append((marc_code,each_contributor))
     
-    if len(contributors)>1:
-        for contributor in contributors[1:]:
-            record.add_ordered_field(
-                pymarc.Field(
-                    tag='700',
-                    indicators = ['1', ' '],
-                    subfields = [
-                        'a', contributor[1].get(marc_rels[contributor[0]]+'_sortname',''),
-                        'e', marc_rels[contributor[0]].replace('_',' ')+'.',
-                        '4', contributor[0],
-                    ]
-                )
+    for (marc_code,contributor) in contributors:
+        sortname=contributor.get( 'agent_sortname','')
+        if not sortname:
+            sortname = reverse_name(contributor.get( 'agent_name',''))
+        record.add_ordered_field(
+            pymarc.Field(
+                tag='700',
+                indicators = ['1', ' '],
+                subfields = [
+                    'a', sortname,
+                    'e', marc_rels[marc_code].replace('_',' ')+'.',
+                    '4', marc_code,
+                ]
             )
+        )
 
     # add subfield to 245 indicating format
     record.add_ordered_field(

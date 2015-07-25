@@ -13,14 +13,13 @@ PANDATA_STRINGFIELDS = [
     '_repo',
     'description',
     'funding_info',
-    'issued_gutenberg',
+    'gutenberg_issued',
     'language',
     'publication_date_original',
     'publisher_original',
     'rights',
     'rights_url',
     'title',
-    'type',
     ]
     
 PANDATA_AGENTFIELDS = [
@@ -33,7 +32,7 @@ PANDATA_LISTFIELDS = PANDATA_AGENTFIELDS + [
     'subjects',
     ]
 PANDATA_DICTFIELDS = [
-    'identifiers',
+    'identifiers', 'creator', 'contributor'
     ]
     
 
@@ -52,6 +51,7 @@ class Pandata(object):
             return self.metadata.get(name, [])
         if name in PANDATA_DICTFIELDS:
             return self.metadata.get(name, {})
+        return self.metadata.get(name, None)
     
     def agents(self, agent_type):
         agents = self.metadata.get(agent_type, [])
