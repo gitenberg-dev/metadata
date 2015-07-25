@@ -3,6 +3,10 @@
 History
 -------
 
+0.1.5 (2015-07-25)
+==================
+* Corrects author and other PyPi metadata
+
 0.1.4 (2015-07-25)
 ==================
 * Adds python package requirements to setup.py

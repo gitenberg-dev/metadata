@@ -36,8 +36,8 @@ setup(
     version='0.1.4',
     description="metadata development - formats and machinery for GITenberg",
     long_description=readme + '\n\n' + history,
-    author="Raymond Yee",
-    author_email='raymond.yee@gmail.com',
+    author="Eric Hellman",
+    author_email='eric@hellman.net',
     url='https://github.com/gitenberg-dev/metadata',
 
     namespace_packages=['gitenberg'],
@@ -50,7 +50,8 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'Intended Audience :: Education',
+        'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
         'Natural Language :: English',
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.6',
