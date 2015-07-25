@@ -25,7 +25,7 @@ test_requirements = [
 
 setup(
     name='gitenberg.metadata',
-    version='0.1.0',
+    version='0.1.2',
     description="metadata development - formats and machinery for GITenberg",
     long_description=readme + '\n\n' + history,
     author="Raymond Yee",
@@ -38,11 +38,11 @@ setup(
     install_requires=requirements,
     license="GPL",
     zip_safe=False,
-    keywords='gitenberg.metadata',
+    keywords="books ebooks gitenberg gutenberg epub metadata",
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: GNU General Public License (GPL)',
         'Natural Language :: English',
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.6',

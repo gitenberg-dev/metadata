@@ -1,0 +1,4 @@
+include README.md LICENSE AUTHORS.rst CONTRIBUTING.rst requirements.versioned.txt HISTORY.rst
+recursive-include gitenberg *
+recursive-include tests *
+
