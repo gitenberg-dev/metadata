@@ -6,4 +6,6 @@ metadata development - formats and machinery for GITenberg
 
 ## Installation
 
+These metadata tools are hosted on PyPI as the namespaced package [gitenberg.metadata](https://pypi.python.org/pypi/gitenberg.metadata/)
+
     pip install gitenberg.metadata
