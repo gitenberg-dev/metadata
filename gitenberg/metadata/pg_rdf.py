@@ -257,7 +257,7 @@ def pg_rdf_to_yaml(file_path, repo_name=None):
     pg_json = pg_rdf_to_json(file_path)
     if repo_name:
         pg_json['_repo'] = repo_name
-    return yaml.safe_dump(pg_json,default_flow_style=False)
+    return yaml.safe_dump(pg_json,default_flow_style=False,allow_unicode=True)
     
 def pg_rdf_to_json(file_path):
     g=rdflib.Graph()
