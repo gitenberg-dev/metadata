@@ -111,7 +111,7 @@ def get_subject(node):
     except KeyError:
         value = node
     if authority:
-        return "!%s:%s" % (authority, value)
+        return "!%s: %s" % (authority, value)
     else:
         return value
 
