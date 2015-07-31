@@ -2,6 +2,8 @@ import yaml
 import json
 from . import marc
 import pymarc
+import requests
+import httplib
 
 def subject_constructor(loader, node):
     return (node.tag[1:] , loader.construct_scalar(node))
@@ -40,7 +42,12 @@ PANDATA_DICTFIELDS = [
 # wrapper class for the json object 
 class Pandata(object):
     def __init__(self, datafile):
-        self.metadata = yaml.load(file(datafile, 'r'))
+        if datafile.startswith('https://') or datafile.startswith('https://'):
+            r = requests.get(datafile)
+            if r.status_code == httplib.OK:
+                self.metadata = yaml.load( r.content)
+        else:
+            self.metadata = yaml.load(file(datafile, 'r'))
     
     def __getattr__(self, name):
         if name in PANDATA_STRINGFIELDS:
