@@ -99,7 +99,7 @@ class Pandata(object):
         if self.metadata.get("_edition", ''):
             return self.metadata["_edition"]
         elif self.identifiers.get("isbn", ''):
-            return str(self.metadata.indentifiers['isbn'][0])  #use first isbn if available
+            return str(self.metadata.identifiers['isbn'][0])  #use first isbn if available
         elif self._repo:
             return edition_name_from_repo(self._repo)
         else:
