@@ -95,7 +95,6 @@ class Pandata(object):
 
     @property
     def _edition(self):
-        print 'start _edition'
         if self.metadata.get("_edition", ''):
             return self.metadata["_edition"]
         elif self.identifiers.get("isbn", ''):
