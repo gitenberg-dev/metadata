@@ -7,8 +7,8 @@ import datetime
 def subject_constructor(loader, node):
     return (node.tag[1:] , loader.construct_scalar(node))
 
-yaml.add_constructor(u'!lcsh', subject_constructor)
-yaml.add_constructor(u'!lcc', subject_constructor)
+yaml.SafeLoader.add_constructor(u'!lcsh', subject_constructor)
+yaml.SafeLoader.add_constructor(u'!lcc', subject_constructor)
 
 PANDATA_STRINGFIELDS = [
     '_repo',
@@ -47,9 +47,9 @@ class Pandata(object):
         if datafile.startswith('https://') or datafile.startswith('https://'):
             r = requests.get(datafile)
             if r.status_code == httplib.OK:
-                self.metadata = yaml.load( r.content)
+                self.metadata = yaml.safe_load( r.content)
         else:
-            self.metadata = yaml.load(file(datafile, 'r'))
+            self.metadata = yaml.safe_load(file(datafile, 'r').read())
     
     def __getattr__(self, name):
         if name in PANDATA_STRINGFIELDS:
@@ -81,12 +81,12 @@ class Pandata(object):
     # some logic to decide
     @property
     def publication_date(self):
-        if self.__getattr__("publication_date"):
-            return  self.__getattr__("publication_date")
-        elif self.__getattr__("gutenberg_issued"):
-            return self.__getattr__("gutenberg_issued")
+        if self.metadata.get("publication_date",None):
+            return  self.metadata["publication_date"]
+        elif self.metadata.get("gutenberg_issued",None):
+            return self.metadata["gutenberg_issued"]
         else:
-            return datetime.datetime.now().date()
+            return str(datetime.datetime.now().date())
     
     # gets the right edition. stub method for compatibility with marc converter
     @staticmethod   
