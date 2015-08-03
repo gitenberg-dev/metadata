@@ -43,8 +43,24 @@ class Rdf2YamlTest(unittest.TestCase):
         
     def test_conversion(self):
         yaml = pg_rdf_to_yaml(TESTDATA_PGRDFFILENAME)
-        open(TESTDATA_YAMLFILENAME, "w+").write(json.dumps(yaml,indent=2, separators=(',', ': '), sort_keys=True))
+        open(TESTDATA_YAMLFILENAME, "w+").write(yaml)
         pandata = Pandata(TESTDATA_YAMLFILENAME)
+        self.assertEqual(pandata._edition,'book')
+
+class PandataTest(unittest.TestCase):
+    def test_smart_properties(self):
+        pandata = Pandata(TESTDATA_FILENAME)
+        #print pandata.metadata
+        self.assertEqual(pandata.publication_date,'2007-03-03')
+        pandata.metadata["gutenberg_issued"] = None
+        self.assertNotEqual(pandata.publication_date,'2007-03-03')
+        self.assertEqual(pandata._edition,'Space-Viking')
+        self.assertEqual(pandata.subjects[0][0],'lcsh')
+
+    def test_load_from_url(self):
+        pandata = Pandata('https://github.com/gitenberg-dev/metadata/raw/master/samples/pandata.yaml')
+        self.assertEqual(pandata._edition,'Space-Viking')
+
 
 
 if __name__ == '__main__':
