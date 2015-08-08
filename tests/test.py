@@ -46,6 +46,7 @@ class Rdf2YamlTest(unittest.TestCase):
         open(TESTDATA_YAMLFILENAME, "w+").write(yaml)
         pandata = Pandata(TESTDATA_YAMLFILENAME)
         self.assertEqual(pandata._edition,'book')
+        self.assertEqual(pandata.subjects[0][0],u'lcsh')
 
 class PandataTest(unittest.TestCase):
     def test_smart_properties(self):
