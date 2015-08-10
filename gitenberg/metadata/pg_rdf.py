@@ -4,6 +4,7 @@ import string
 import yaml
 from .licenses import CCLicense
 from .marc import plural, marc_rels
+from .pandata import TypedSubject
 
 from rdflib_jsonld import serializer
 
@@ -111,7 +112,7 @@ def get_subject(node):
     except KeyError:
         value = node
     if authority:
-        return "!%s: %s" % (authority, value)
+        return TypedSubject( (authority, value) )
     else:
         return value
 
@@ -124,7 +125,6 @@ def get_subjects(key, val, entities=None) :
     elif  isinstance( val, dict ):
         return (key, [get_subject(val)])
     else:
-        print val
         return (key, [val])
         
 def identifiers(node,entities=None):

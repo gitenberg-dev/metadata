@@ -4,11 +4,18 @@ import requests
 import httplib
 import datetime
 
+class TypedSubject(tuple):
+    pass
+        
 def subject_constructor(loader, node):
-    return (node.tag[1:] , loader.construct_scalar(node))
+    return TypedSubject((node.tag[1:] , loader.construct_scalar(node)))
+def subject_representer(dumper, subject):
+    return dumper.represent_scalar(u'!%s'% subject[0], subject[1])
+
 
 yaml.SafeLoader.add_constructor(u'!lcsh', subject_constructor)
 yaml.SafeLoader.add_constructor(u'!lcc', subject_constructor)
+yaml.SafeDumper.add_representer(TypedSubject, subject_representer)
 
 PANDATA_STRINGFIELDS = [
     '_repo',
