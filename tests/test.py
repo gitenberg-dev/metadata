@@ -13,6 +13,7 @@ TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), '../samples/pandata.
 TESTDATA_MARCFILENAME = os.path.join(os.path.dirname(__file__), '../samples/testoutput.marc.xml')
 TESTDATA_PGRDFFILENAME = os.path.join(os.path.dirname(__file__), '../samples/pg20728.rdf')
 TESTDATA_YAMLFILENAME = os.path.join(os.path.dirname(__file__), '../samples/testoutput.yaml')
+EDITIONTEST_FILENAME = os.path.join(os.path.dirname(__file__), '../samples/editions.yaml')
 
 class Yaml2MarcTest(unittest.TestCase):
     def setUp(self):
@@ -46,7 +47,7 @@ class Rdf2YamlTest(unittest.TestCase):
         open(TESTDATA_YAMLFILENAME, "w+").write(yaml)
         pandata = Pandata(TESTDATA_YAMLFILENAME)
         self.assertEqual(pandata._edition,'book')
-        self.assertEqual(pandata.subjects[0][0],u'lcsh')
+        self.assertTrue(pandata.subjects[0][0] in ('lcsh','lcc'))
 
 class PandataTest(unittest.TestCase):
     def test_smart_properties(self):
@@ -56,12 +57,19 @@ class PandataTest(unittest.TestCase):
         pandata.metadata["gutenberg_issued"] = None
         self.assertNotEqual(pandata.publication_date,'2007-03-03')
         self.assertEqual(pandata._edition,'Space-Viking')
-        self.assertEqual(pandata.subjects[0][0],'lcsh')
+        self.assertTrue(pandata.subjects[0][0] in ('lcsh','lcc'))
 
     def test_load_from_url(self):
         pandata = Pandata('https://github.com/gitenberg-dev/metadata/raw/master/samples/pandata.yaml')
         self.assertEqual(pandata._edition,'Space-Viking')
-
+    
+    def test_editions(self):
+        pandata = Pandata(EDITIONTEST_FILENAME)
+        (ed1,ed2) = pandata.get_edition_list()
+        self.assertEqual(ed1.publisher, "Project Gutenberg")
+        self.assertEqual(ed2.publisher, "Recovering the Classics")
+        self.assertEqual(ed2.isbn, "9781111122223")
+        self.assertEqual(ed1.isbn, "")
 
 
 if __name__ == '__main__':

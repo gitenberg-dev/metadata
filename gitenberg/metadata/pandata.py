@@ -1,5 +1,6 @@
 import yaml
 import json
+import copy
 import requests
 import httplib
 import datetime
@@ -15,6 +16,7 @@ def subject_representer(dumper, subject):
 
 yaml.SafeLoader.add_constructor(u'!lcsh', subject_constructor)
 yaml.SafeLoader.add_constructor(u'!lcc', subject_constructor)
+yaml.SafeLoader.add_constructor(u'!bisacsh', subject_constructor)
 yaml.SafeDumper.add_representer(TypedSubject, subject_representer)
 
 PANDATA_STRINGFIELDS = [
@@ -40,18 +42,26 @@ PANDATA_LISTFIELDS = PANDATA_AGENTFIELDS + [
     'subjects', 'covers',
     ]
 PANDATA_DICTFIELDS = [
-    'identifiers', 'creator', 'contributor'
+    'identifiers', 'creator', 'contributor', 'edition_identifiers',
     ]
     
 def edition_name_from_repo(repo):
     if '_' in repo:
         return '_'.join(repo.split('_')[0:-1])
     return repo
+
+def get_one(maybe_a_list):
+    if  isinstance(maybe_a_list, list):
+        return str(maybe_a_list[0])  #use first name if available
+    else:
+        return str(maybe_a_list)
     
 # wrapper class for the json object 
 class Pandata(object):
     def __init__(self, datafile):
-        if datafile.startswith('https://') or datafile.startswith('https://'):
+        if isinstance(datafile, Pandata):
+            self.metadata=copy.deepcopy(datafile.metadata) # copy the metadata
+        elif datafile.startswith('https://') or datafile.startswith('https://'):
             r = requests.get(datafile)
             if r.status_code == httplib.OK:
                 self.metadata = yaml.safe_load( r.content)
@@ -100,13 +110,37 @@ class Pandata(object):
     def get_by_isbn(isbn):
         return None
 
+            
+    def get_one_identifier(self, id_name):
+        print 'in get 1'
+        if self.metadata.get(id_name,''):
+            return get_one(self.metadata[id_name])  
+        if self.identifiers.get(id_name,''):
+            return get_one(self.identifiers[id_name])  
+        if self.edition_identifiers.has_key(id_name):
+            return get_one(self.edition_identifiers[id_name]) 
+        return '' 
+
+    @property
+    def isbn(self):
+        print 'in isbn'
+        return self.get_one_identifier('isbn')
+
     @property
     def _edition(self):
         if self.metadata.get("_edition", ''):
             return self.metadata["_edition"]
-        elif self.identifiers.get("isbn", ''):
-            return str(self.metadata.identifiers['isbn'][0])  #use first isbn if available
+        elif self.get_one_identifier('isbn'):
+            return self.get_one_identifier('isbn')  #use first isbn if available
         elif self._repo:
             return edition_name_from_repo(self._repo)
         else:
             return 'book'  #this will be the default file name
+
+    def get_edition_list(self):
+        yield self
+        for edition in self.edition_list:
+            new_self = Pandata(self)
+            for key in edition.keys():
+                new_self.metadata[key] = edition[key]
+            yield new_self
