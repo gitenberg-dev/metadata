@@ -72,7 +72,8 @@ class PandataTest(unittest.TestCase):
         self.assertEqual(ed1.isbn, "")
         self.assertEqual(ed1.edition_identifiers['edition_id'], "repo:Space-Viking_20728#default")
         self.assertEqual(ed2.edition_identifiers['edition_id'], u'repo:Space-Viking_20728#9781111122223')
-
+        pandata = Pandata('https://github.com/gitenberg-dev/metadata/raw/master/samples/pandata.yaml')
+        [ed] = pandata.get_edition_list()
 
 if __name__ == '__main__':
     unittest.main()
