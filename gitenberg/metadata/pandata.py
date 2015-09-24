@@ -39,7 +39,7 @@ PANDATA_AGENTFIELDS = [
     'illustrators',
     ]
 PANDATA_LISTFIELDS = PANDATA_AGENTFIELDS + [
-    'subjects', 'covers',
+    'subjects', 'covers', 'edition_list',
     ]
 PANDATA_DICTFIELDS = [
     'identifiers', 'creator', 'contributor', 'edition_identifiers',
