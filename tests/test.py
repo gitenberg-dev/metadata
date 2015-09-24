@@ -70,6 +70,8 @@ class PandataTest(unittest.TestCase):
         self.assertEqual(ed2.publisher, "Recovering the Classics")
         self.assertEqual(ed2.isbn, "9781111122223")
         self.assertEqual(ed1.isbn, "")
+        self.assertEqual(ed1.edition_identifiers['edition_id'], "repo:Space-Viking_20728#default")
+        self.assertEqual(ed2.edition_identifiers['edition_id'], u'repo:Space-Viking_20728#9781111122223')
 
 
 if __name__ == '__main__':

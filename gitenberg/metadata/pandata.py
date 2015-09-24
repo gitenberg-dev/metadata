@@ -67,6 +67,7 @@ class Pandata(object):
                 self.metadata = yaml.safe_load( r.content)
         else:
             self.metadata = yaml.safe_load(file(datafile, 'r').read())
+        self.set_edition_id()
     
     def __getattr__(self, name):
         if name in PANDATA_STRINGFIELDS:
@@ -79,11 +80,24 @@ class Pandata(object):
             return self.metadata.get(name, {})
         return self.metadata.get(name, None)
     
+    def set_edition_id(self):
+        # set a (hopefully globally unique) edition identifier
+        if not self.metadata.has_key('edition_identifiers'):
+            self.metadata['edition_identifiers'] = {}
+        base=self.url
+        if not base:
+            try:
+                base = unicode(self.identifiers.keys[0])+':'+unicode(self.identifiers.values[0])
+            except:
+                base = u'repo:' + unicode(self._repo)
+        self.metadata['edition_identifiers']['edition_id'] =  base + '#' + self._edition
+    
     def agents(self, agent_type):
         agents = self.metadata.get(agent_type, [])
         return agents if agents else []
         
     # the edition should be able to report ebook downloads, which should have format and url attributes
+    # TODO - fill in URL based on a standard place in repo
     def downloads(self):
         return []
 
@@ -112,7 +126,6 @@ class Pandata(object):
 
             
     def get_one_identifier(self, id_name):
-        print 'in get 1'
         if self.metadata.get(id_name,''):
             return get_one(self.metadata[id_name])  
         if self.identifiers.get(id_name,''):
@@ -123,15 +136,14 @@ class Pandata(object):
 
     @property
     def isbn(self):
-        print 'in isbn'
         return self.get_one_identifier('isbn')
 
     @property
     def _edition(self):
         if self.metadata.get("_edition", ''):
-            return self.metadata["_edition"]
+            return unicode(self.metadata["_edition"])
         elif self.get_one_identifier('isbn'):
-            return self.get_one_identifier('isbn')  #use first isbn if available
+            return unicode(self.get_one_identifier('isbn'))  #use first isbn if available
         elif self._repo:
             return edition_name_from_repo(self._repo)
         else:
@@ -143,4 +155,5 @@ class Pandata(object):
             new_self = Pandata(self)
             for key in edition.keys():
                 new_self.metadata[key] = edition[key]
+            new_self.set_edition_id()
             yield new_self
