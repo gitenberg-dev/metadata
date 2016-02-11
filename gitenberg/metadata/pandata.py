@@ -174,3 +174,8 @@ class Pandata(object):
                 new_self.metadata[key] = edition[key]
             new_self.set_edition_id()
             yield new_self
+            
+    def dump_file(self, file_name):
+        with open(file_name,'w+') as f:
+            f.write(yaml.safe_dump(self.metadata,default_flow_style=False,allow_unicode=True))
+        
