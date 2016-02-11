@@ -59,16 +59,19 @@ def get_one(maybe_a_list):
     
 # wrapper class for the json object 
 class Pandata(object):
-    def __init__(self, datafile):
-        if isinstance(datafile, Pandata):
-            self.metadata=copy.deepcopy(datafile.metadata) # copy the metadata
-        elif datafile.startswith('https://') or datafile.startswith('https://'):
-            r = requests.get(datafile)
-            if r.status_code == httplib.OK:
-                self.metadata = yaml.safe_load( r.content)
+    def __init__(self, datafile=None):
+        if datafile:
+            if isinstance(datafile, Pandata):
+                self.metadata=copy.deepcopy(datafile.metadata) # copy the metadata
+            elif datafile.startswith('https://') or datafile.startswith('https://'):
+                r = requests.get(datafile)
+                if r.status_code == httplib.OK:
+                    self.metadata = yaml.safe_load( r.content)
+            else:
+                self.metadata = yaml.safe_load(file(datafile, 'r').read())
+            self.set_edition_id()
         else:
-            self.metadata = yaml.safe_load(file(datafile, 'r').read())
-        self.set_edition_id()
+            self.metadata = {}
     
     def __getattr__(self, name):
         if name in PANDATA_STRINGFIELDS:
@@ -80,6 +83,10 @@ class Pandata(object):
         if name in PANDATA_DICTFIELDS:
             return self.metadata.get(name, {})
         return self.metadata.get(name, None)
+        
+    def load(self, yaml_string):
+        self.metadata = yaml.safe_load(yaml_string)
+        self.set_edition_id()
     
     def set_edition_id(self):
         # set a (hopefully globally unique) edition identifier
@@ -93,9 +100,18 @@ class Pandata(object):
                 base = u'repo:' + unicode(self._repo)
         self.metadata['edition_identifiers']['edition_id'] =  base + '#' + self._edition
     
-    def agents(self, agent_type):
-        agents = self.metadata.get(agent_type, [])
-        return agents if agents else []
+    def agents(self, agent_type):        
+        if self.creator.get(agent_type,None):
+            agents=[self.creator.get(agent_type,None)]
+        elif self.creator.get(plural(agent_type),None):
+            agents=self.creator.get(plural(agent_type),None)
+        elif self.contributor.get(agent_type,None):
+            agents=[self.contributor.get(agent_type,None)]
+        elif self.contributor.get(plural(agent_type),None):
+            agents=self.contributor.get(plural(agent_type),None)
+        else:
+            agents = []
+        return agents
         
     # the edition should be able to report ebook downloads, which should have format and url attributes
     # TODO - fill in URL based on a standard place in repo
@@ -108,7 +124,7 @@ class Pandata(object):
 
     # these should be last name first
     def authnames(self):
-        return [auth.get('author_sortname','') for auth in self.authors]
+        return [auth.get('agent_name','') for auth in self.agents("author")]
     
     # some logic to decide
     @property
