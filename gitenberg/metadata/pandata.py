@@ -4,6 +4,7 @@ import copy
 import requests
 import httplib
 import datetime
+from .utils import marc_rels, inverse_marc_rels, plural, reverse_name
 
 class TypedSubject(tuple):
     pass
