@@ -33,7 +33,7 @@ test_requirements = [
 
 setup(
     name='gitenberg.metadata',
-    version='0.1.10',
+    version='0.1.12',
     description="metadata development - formats and machinery for GITenberg",
     long_description=readme + '\n\n' + history,
     author="Eric Hellman",
