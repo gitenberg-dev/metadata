@@ -53,6 +53,8 @@ def get_value(key, val, entities=None):
                 return (key, val["rdf:value"])
             except KeyError:
                 return (key, None)
+    except TypeError:
+        return (key, None)
 
 def set_listable_entity(key, val, entities=None) : 
     list_of_vals = []
@@ -236,8 +238,9 @@ pandata_map ={
 "pgterms:webpage": ("wikipedia",get_url),
 "rdfs:comment":None, 
 }
+other_creators = {'edt', 'aut'}
 for key in marc_rels.keys():
-    pandata_map[ "marcrel:"+key ] = ("contributor/" + marc_rels[key], set_listable_entity)
+    pandata_map[ "marcrel:"+key ] = ('{}/{}'.format(("creator" if key in other_creators else "contributor") , marc_rels[key]), set_listable_entity)
     
 pandata_adders = [identifiers]
 postprocessors = [cover_mover]
