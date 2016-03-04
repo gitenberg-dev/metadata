@@ -177,5 +177,8 @@ class Pandata(object):
             
     def dump_file(self, file_name):
         with open(file_name,'w+') as f:
-            f.write(yaml.safe_dump(self.metadata,default_flow_style=False,allow_unicode=True))
+            f.write(self.__unicode__())
+            
+    def __unicode__(self):
+        return yaml.safe_dump(self.metadata,default_flow_style=False,allow_unicode=True)
         
