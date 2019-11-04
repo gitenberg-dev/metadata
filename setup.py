@@ -16,7 +16,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     "pymarc==3.0.3",
-    "PyYAML==3.11",
+    "PyYAML==5.1",
     "six==1.9.0",
     "SPARQLWrapper==1.6.4",
     "html5lib==0.999999",
