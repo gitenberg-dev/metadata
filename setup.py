@@ -19,7 +19,7 @@ requirements = [
     "PyYAML==3.11",
     "six==1.9.0",
     "SPARQLWrapper==1.6.4",
-    "html5lib==0.999999",
+    "html5lib==0.999999999",
     "isodate==0.5.1",
     "pyparsing==2.0.3",
     "rdflib==4.2.0",
